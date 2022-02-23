@@ -30,6 +30,18 @@ app.use(cors());
 // adding morgan to log HTTP requests
 app.use(morgan("combined"));
 
+//sign up
+app.post("/signup", async (req, res)=>{
+  const newUser = req.body;
+  // if(User.includes({ userName: req.body.userName })){
+  //  return next(createError(400, `This username "${req.body.userName}" already has an account.`))
+  // }
+  const user = new User(newUser);
+  await user.save();
+  res.send({ message: "New profile created." });
+
+});
+
 //auth
 app.post("/auth", async (req, res) => {
   const user = await User.findOne({ userName: req.body.userName });
@@ -59,11 +71,11 @@ app.use(async (req, res, next) => {
 });
 
 // defining CRUD operations
-app.get("/", async (req, res) => {
+app.get("/event", async (req, res) => {
   res.send(await Event.find());
 });
 
-app.post("/", async (req, res) => {
+app.post("/event", async (req, res) => {
   console.log(req.body);
   const newEvent = req.body;
   const event = new Event(newEvent);
@@ -71,12 +83,12 @@ app.post("/", async (req, res) => {
   res.send({ message: "New event added." });
 });
 
-app.delete("/:id", async (req, res) => {
+app.delete("/event/:id", async (req, res) => {
   await Event.deleteOne({ _id: ObjectId(req.params.id) });
   res.send({ message: "Event removed." });
 });
 
-app.put("/:id", async (req, res) => {
+app.put("/event/:id", async (req, res) => {
   await Event.findOneAndUpdate({ _id: ObjectId(req.params.id) }, req.body);
   res.send({ message: "Event updated." });
 });
@@ -110,8 +122,8 @@ app.get("/search/date/:date", async (req, res) => {
 });
 
 // starting the server
-app.listen(3001, () => {
-  console.log("listening on port 3001");
+app.listen( process.env.PORT || 3001, () => {
+  console.log("listening on port");
 });
 
 var db = mongoose.connection;
